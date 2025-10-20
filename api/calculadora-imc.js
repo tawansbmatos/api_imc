@@ -1,4 +1,4 @@
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,22 +11,26 @@ module.exports = (req, res) => {
     return res.status(405).json({ erro: 'Método não permitido. Use POST.' });
   }
 
-  const { peso, altura } = req.body;
+  try {
+    const { peso, altura } = req.body;
 
-  if (!peso || !altura) {
-    return res.status(400).json({ erro: 'Informe peso e altura.' });
+    if (!peso || !altura) {
+      return res.status(400).json({ erro: 'Informe peso e altura.' });
+    }
+
+    const imc = peso / (altura * altura);
+    let classificacao = '';
+
+    if (imc < 18.5) classificacao = 'Abaixo do peso';
+    else if (imc < 24.9) classificacao = 'Peso normal';
+    else if (imc < 29.9) classificacao = 'Sobrepeso';
+    else classificacao = 'Obesidade';
+
+    return res.status(200).json({
+      imc: imc.toFixed(2),
+      classificacao
+    });
+  } catch (erro) {
+    return res.status(500).json({ erro: 'Erro interno no servidor.' });
   }
-
-  const imc = peso / (altura * altura);
-  let classificacao = '';
-
-  if (imc < 18.5) classificacao = 'Abaixo do peso';
-  else if (imc < 24.9) classificacao = 'Peso normal';
-  else if (imc < 29.9) classificacao = 'Sobrepeso';
-  else classificacao = 'Obesidade';
-
-  return res.status(200).json({
-    imc: imc.toFixed(2),
-    classificacao
-  });
 };
