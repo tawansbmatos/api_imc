@@ -1,9 +1,9 @@
 module.exports = async (req, res) => {
-  // 1. Sempre defina os cabeçalhos CORS
+  // 1. Sempre defina os cabeçalhos CORS antes de qualquer retorno
   res.setHeader('Access-Control-Allow-Origin', '*'); // Permite qualquer domínio
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  // É crucial incluir o Content-Type aqui para o preflight request funcionar
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json'); // Garante que a resposta seja JSON
 
   // 2. Resposta para o preflight (OPTIONS request)
   if (req.method === 'OPTIONS') {
@@ -18,14 +18,19 @@ module.exports = async (req, res) => {
 
   // 4. Lógica principal
   try {
+    // req.body é automaticamente preenchido pela Vercel/Node em requisições JSON POST
     const { peso, altura } = req.body;
 
-    if (!peso || !altura) {
-      return res.status(400).json({ erro: 'Informe peso e altura.' });
+    // Converte para float (embora o JS já faça isso automaticamente com as tags <input type="number">)
+    const p = parseFloat(peso);
+    const a = parseFloat(altura);
+
+    if (isNaN(p) || isNaN(a) || p <= 0 || a <= 0) {
+      return res.status(400).json({ erro: 'Peso e altura devem ser números válidos e positivos.' });
     }
 
     // Cálculo do IMC
-    const imc = peso / (altura * altura);
+    const imc = p / (a * a);
     let classificacao = '';
 
     if (imc < 18.5) classificacao = 'Abaixo do peso';
@@ -38,6 +43,7 @@ module.exports = async (req, res) => {
       classificacao
     });
   } catch (erro) {
+    // Loga o erro interno para o console da Vercel (se necessário)
+    console.error("Erro no processamento do IMC:", erro); 
     return res.status(500).json({ erro: 'Erro interno no servidor.' });
   }
-};
