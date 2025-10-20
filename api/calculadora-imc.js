@@ -1,4 +1,4 @@
-module.exports = (req, res) => {
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ erro: 'Método não permitido. Use POST.' });
   }
@@ -14,8 +14,11 @@ module.exports = (req, res) => {
 
   if (imc < 18.5) classificacao = 'Abaixo do peso';
   else if (imc < 24.9) classificacao = 'Peso normal';
-  else if (imc < 29.5) classificacao = 'Sobrepeso';
+  else if (imc < 29.9) classificacao = 'Sobrepeso';
   else classificacao = 'Obesidade';
 
-  res.status(200).json({ imc: imc.toFixed(2), classificacao });
-};
+  return res.status(200).json({
+    imc: imc.toFixed(2),
+    classificacao
+  });
+}
