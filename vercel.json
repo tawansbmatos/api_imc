@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/calculadora-imc.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/api/calculadora-imc", "dest": "api/calculadora-imc.js" }
+  ]
+}
