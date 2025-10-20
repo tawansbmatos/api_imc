@@ -15,7 +15,7 @@ if(!peso || !altura){
 const imc = peso / (altura * altura); //cálculo imc
 let classification = ''; //onde será exibido a descrição de acordo com o peso.
 
-if (imc < 18.5){
+if (imc < 18.5){ // condições 
     classification = 'Abaixo do peso';
 }else if (imc < 24.9) {
     classification = 'Peso normal';
